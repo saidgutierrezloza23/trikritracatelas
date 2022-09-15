@@ -1,9 +1,13 @@
+var PLAY= 1;
+var END= 0;
+var gameState = PLAY;
+
 var obstacle;
 var trex, trex_running, trex_collided;
 var ground, invisibleGround, groundImage;
 var cloud, cloudsGroup, cloudImage;
-var obstacleGroup, obtacle1, obtacle2, obstacle3, obstacle4, obstacle5, obstacle6;
-
+var obstacleGroup, obstacle1, obstacle2, obstacle3, obstacle4, obstacle5, obstacle6;
+var score
 
 
 var newImage;
@@ -16,12 +20,12 @@ function preload(){
   
   cloudImage = loadImage("cloud.png");
 
-  claudImage = loadImage("obstacle1.png");
-  cloudImage = loadimage("obstacle2.png");
-  cloudImage = loadimage("obstacle3.png");
-  cloudImage = loadimage("obstacle4.png");
-  cloudImage = loadimage("obstacle5.png");
-  cloudImage = loadimage("obstacle6.png");
+  obstacle1 = loadImage("obstacle1.png");
+  obstacle2 = loadImage("obstacle2.png");
+  obstacle3 = loadImage("obstacle3.png");
+  obstacle4 = loadImage("obstacle4.png");
+  obstacle5 = loadImage("obstacle5.png");
+  obstacle6 = loadImage("obstacle6.png");
  
 
 
@@ -38,36 +42,60 @@ function setup() {
   ground = createSprite(200,180,400,20);
   ground.addImage("ground",groundImage);
   ground.x = ground.width /2;
-  ground.velocityX = -4;
+ 
   
   invisibleGround = createSprite(200,190,400,10);
   invisibleGround.visible = false;
-  
+
+  score = 0;
 
   
 }
 
 function draw() {
   background(180);
+
+  text("Puntuación :" +score,500 , 30);
+  if(gameState === PLAY){
+    ground.velocityX = -4;
   
+    if (ground.x < 0){
+      ground.x = ground.width/2;
+    }
+    score = score + Math.round(frameCount/60);
+
+    if(keyDown("space") && trex.y>=100) {
+      trex.velocityY = -10;
+    }
+
+    trex.velocityY = trex.velocityY + 0.8
   
-  
-  if(keyDown("space") && trex.y>=100) {
-    trex.velocityY = -10;
+    
+    spawnClouds();
+   spawnobstacle();
+   
+   if(obstacleGroup.isTouching(trex)) {
+
+  gameState= END
+   }
   }
+
+  else if(gameState === END) { 
+
+graund. velocityX= 0;
+
+
+
+  } 
   
-  trex.velocityY = trex.velocityY + 0.8
+ 
   
-  if (ground.x < 0){
-    ground.x = ground.width/2;
-  }
+  
+ 
   
   trex.collide(invisibleGround);
   
-  //aparecer las nubes
-  spawnClouds();
-  
-  spawnobstacle();
+ 
 
   drawSprites();
 }
@@ -80,6 +108,8 @@ function spawnClouds() {
     cloud.y = Math.round(random(10,60));
     cloud.scale = 0.4;
     cloud.velocityX = -3;
+    claud.lifetime = 104;
+  
     
     //ajustar la profundidad
     cloud.depth = trex.depth
@@ -89,6 +119,7 @@ function spawnClouds() {
   }
 
   function spawnobstacle() {
+  
 
     if (frameCount % 70 === 0) {
     obstacle = createSprite(610,160,50,10); 
@@ -110,8 +141,13 @@ function spawnClouds() {
      break;
 
      default: break;
-
+     
     }
+obstacle.scale = 0.5;
+obstacle. lifetime = 102;
+
+obstacleGroup.add(obstacle);
+
     }
 }
 
